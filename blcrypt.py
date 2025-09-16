@@ -28,7 +28,13 @@ def decrypt_sav_to_yaml(sav_path: Path, steamid: str) -> bytes:
         raise ValueError(f"input .sav size {len(ciph)} not multiple of 16")
     key = derive_key(steamid)
     pt_padded = AES.new(key, AES.MODE_ECB).decrypt(ciph)
-    body = unpad(pt_padded, 16, style="pkcs7")
+
+    try:
+        body = unpad(pt_padded, 16, style="pkcs7")
+    except ValueError:
+        # unpadding failed, use raw decrypted data
+        body = pt_padded
+
     return zlib.decompress(body)
 
 def encrypt_yaml_to_sav(yaml_path: Path, steamid: str) -> bytes:
