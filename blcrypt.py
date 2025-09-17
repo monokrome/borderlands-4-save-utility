@@ -474,7 +474,13 @@ def decrypt_sav_to_yaml(sav_path: Path, steamid: str) -> bytes:
 
 def encrypt_yaml_to_sav(yaml_path: Path, steamid: str) -> bytes:
     raw = yaml_path.read_bytes()
-    comp = zlib.compress(raw, level=9)
+
+    try:
+        text_data = raw.decode('utf-8')
+        comp = zlib.compress(text_data.encode('utf-8'), level=9)
+    except UnicodeDecodeError:
+        comp = zlib.compress(raw, level=9)
+
     pt_padded = pad(comp, 16, style="pkcs7")
     key = derive_key(steamid)
     ciph = AES.new(key, AES.MODE_ECB).encrypt(pt_padded)
