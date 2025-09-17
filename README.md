@@ -2,6 +2,8 @@
 
 A tool to decrypt and encrypt Borderlands 4 save files for editing, with advanced item serial decoding/encoding capabilities for modifying weapon and equipment stats. Feel free to use this code in any way you see fit, just credit me! Enjoy.
 
+### If you find this tool helpful, please consider giving it a ⭐!
+
 ## Requirements
 
 - [Python 3.7+](https://www.python.org/downloads/) - Download and install Python
@@ -185,4 +187,5 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
 
