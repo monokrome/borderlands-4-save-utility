@@ -117,7 +117,7 @@ python blcrypt.py encrypt -in save.yaml -out 1.sav -id 76561198XXXXXXXXX
 # 4. Replace your original save file with 1.sav
 ```
 
-### Advanced Saved Editing with Item Serial Modification (EXPERIMENTAL)
+### Advanced Save Editing with Item Serial Modification (EXPERIMENTAL)
 
 ```bash
 # 1. Decrypt save file with item serial decoding
@@ -187,5 +187,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
 
 
