@@ -8,7 +8,7 @@ A tool to decrypt and encrypt Borderlands 4 save files for editing, with advance
 
 - [Python 3.7+](https://www.python.org/downloads/) - Download and install Python
 - [pycryptodome](https://pypi.org/project/pycryptodome/) - Cryptography library (installed via pip)
-- [PyYAML](https://pypi.org/project/PyYAML/) - YAML parser/emitter
+- [PyYAML](https://pypi.org/project/PyYAML/) - YAML parser/emitter (installed via pip)
 
 ## Installation (venv recommended)
 
@@ -189,6 +189,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
 
 
 
