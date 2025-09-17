@@ -126,7 +126,7 @@ python blcrypt.py decrypt -in 1.sav -out save.yaml -id 76561198XXXXXXXXX --decod
 # 2. Edit the _DECODED_ITEMS section in save.yaml to modify weapon damage, rarity, etc.
 
 # 3. Encrypt back with item serial encoding
-python blcrypt.py encrypt -in save.yaml -out .sav -id 76561198XXXXXXXXX --encode-serials
+python blcrypt.py encrypt -in save.yaml -out 1.sav -id 76561198XXXXXXXXX --encode-serials
 
 # 4. Replace your original save file with the new 1.sav
 ```
@@ -187,6 +187,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
 
 
 
