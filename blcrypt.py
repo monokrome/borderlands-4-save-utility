@@ -470,18 +470,17 @@ def decrypt_sav_to_yaml(sav_path: Path, steamid: str) -> bytes:
     except ValueError:
         body = pt_padded
 
-    return zlib.decompress(body)
+    yaml_data = zlib.decompress(body)
+    return yaml_data
 
 def encrypt_yaml_to_sav(yaml_path: Path, steamid: str) -> bytes:
-    raw = yaml_path.read_bytes()
+    current_yaml = yaml_path.read_bytes()
+    comp = zlib.compress(current_yaml, level=9)
+    adler32 = zlib.adler32(current_yaml) & 0xffffffff
+    uncompressed_length = len(current_yaml)
+    packed = comp + struct.pack('<I', adler32) + struct.pack('<I', uncompressed_length)
 
-    try:
-        text_data = raw.decode('utf-8')
-        comp = zlib.compress(text_data.encode('utf-8'), level=9)
-    except UnicodeDecodeError:
-        comp = zlib.compress(raw, level=9)
-
-    pt_padded = pad(comp, 16, style="pkcs7")
+    pt_padded = pad(packed, 16, style="pkcs7")
     key = derive_key(steamid)
     ciph = AES.new(key, AES.MODE_ECB).encrypt(pt_padded)
     return ciph
@@ -587,6 +586,7 @@ def main():
                 sav_bytes = encrypt_yaml_to_sav(in_path, args.steamid)
                 out_path.write_bytes(sav_bytes)
                 print(f"wrote {out_path}")
+
         else:
             parser.error("unknown command")
     except Exception as e:
