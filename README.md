@@ -133,6 +133,8 @@ python blcrypt.py encrypt -in save.yaml -out 1.sav -id 76561198XXXXXXXXX --encod
 
 ## Important Notes
 
+### ONLY STEAM SAVES ARE SUPPORTED (FOR NOW)
+
 - **Backup your save files** before using this tool
 - Your Steam ID is the 17-digit number that starts with `7656119...`
 - On Windows, you can find this ID as the folder location: `C:\Users\{username}\Documents\My Games\Borderlands 4\Saved\SaveGames` - the folder name in here is the ID to use
@@ -187,6 +189,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
 
 
 
