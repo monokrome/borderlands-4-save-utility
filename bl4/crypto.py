@@ -7,31 +7,20 @@ import zlib
 import yaml
 import struct
 
-from enum import Enum
-from pathlib import Path
 from Crypto.Cipher import AES
-from Crypto.Util.Padding import pad, unpad
-from dataclasses import dataclass
+from Crypto.Util.Padding import pad
+from Crypto.Util.Padding import unpad
+from pathlib import Path
 
-from typing import (
-    Dict,
-    List,
-    Optional,
-    Collection,
-)
-
-
-class ConfidenceLevel(Enum):
-    HIGH = "high"
-    MEDIUM = "medium"
-    LOW = "high"
-    UNKNOWN = "unknown"
+from bl4.encoding import DecodedItem
+from bl4.encoding import ItemStats
+from bl4.encoding import ConfidenceLevel
+from bl4.encoding import encode_item_serial
 
 
-DECODE_CHARS = (
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-    "0123456789+/=!$%&*()[]{}~`^_<>?#;"
-)
+from typing import Collection
+from typing import Dict
+from typing import List
 
 
 BASE_KEY = bytes(
@@ -92,73 +81,6 @@ def unknown_constructor(loader, _tag_suffix, node):
 
 
 yaml.add_multi_constructor("!", unknown_constructor, yaml.SafeLoader)
-
-
-@dataclass
-class ItemStats:
-    primary_stat: Optional[int] = None
-    secondary_stat: Optional[int] = None
-    level: Optional[int] = None
-    rarity: Optional[int] = None
-    manufacturer: Optional[int] = None
-    item_class: Optional[int] = None
-    flags: Optional[List[int]] = None
-
-
-@dataclass
-class DecodedItem:
-    serial: str
-    item_type: str
-    item_category: str
-    length: int
-    stats: ItemStats
-    raw_fields: Dict[str, int | List[int]]
-    confidence: ConfidenceLevel
-
-
-def bit_pack_decode(serial: str) -> bytes:
-    if serial.startswith("@Ug"):
-        payload = serial[3:]
-    else:
-        payload = serial
-
-    char_map = {}
-
-    for i, c in enumerate(DECODE_CHARS):
-        char_map[c] = i
-
-    bits = []
-    for c in payload:
-        if c in char_map:
-            val = char_map[c]
-            bits.extend(format(val, "06b"))
-
-    bit_string = "".join(bits)
-    while len(bit_string) % 8 != 0:
-        bit_string += "0"
-
-    byte_data = bytearray()
-    for i in range(0, len(bit_string), 8):
-        byte_val = int(bit_string[i:i+8], 2)
-        byte_data.append(byte_val)
-
-    return bytes(byte_data)
-
-
-def bit_pack_encode(data: bytes, prefix: str = "@Ug") -> str:
-    bit_string = "".join(format(byte, "08b") for byte in data)
-
-    while len(bit_string) % 6 != 0:
-        bit_string += "0"
-
-    result = []
-    for i in range(0, len(bit_string), 6):
-        chunk = bit_string[i:i+6]
-        val = int(chunk, 2)
-        if val < len(DECODE_CHARS):
-            result.append(DECODE_CHARS[val])
-
-    return prefix + "".join(result)
 
 
 def extract_fields(data: bytes) -> Dict[str, int | List[int]]:
@@ -390,74 +312,6 @@ def decode_item_serial(serial: str) -> DecodedItem:
         )
 
 
-def encode_item_serial(decoded_item: DecodedItem) -> str:
-    try:
-        original_data = bit_pack_decode(decoded_item.serial)
-        data = bytearray(original_data)
-
-        if decoded_item.item_type == "r":
-            if decoded_item.stats.primary_stat is not None and len(data) >= 2:
-                struct.pack_into(
-                    "<H", data, 0, decoded_item.stats.primary_stat
-                )
-            if (
-                decoded_item.stats.secondary_stat is not None
-                and len(data) >= 14
-            ):
-                struct.pack_into(
-                    "<H", data, 12, decoded_item.stats.secondary_stat
-                )
-            if decoded_item.stats.rarity is not None and len(data) >= 2:
-                data[1] = decoded_item.stats.rarity
-            if decoded_item.stats.manufacturer is not None and len(data) >= 5:
-                data[4] = decoded_item.stats.manufacturer
-            if decoded_item.stats.item_class is not None and len(data) >= 9:
-                data[8] = decoded_item.stats.item_class
-
-        elif decoded_item.item_type == "e":
-            if decoded_item.stats.primary_stat is not None and len(data) >= 4:
-                struct.pack_into(
-                    "<H", data, 2, decoded_item.stats.primary_stat
-                )
-            if (
-                decoded_item.stats.secondary_stat is not None
-                and len(data) >= 10
-            ):
-                struct.pack_into(
-                    "<H", data, 8, decoded_item.stats.secondary_stat
-                )
-            if decoded_item.stats.manufacturer is not None and len(data) >= 2:
-                data[1] = decoded_item.stats.manufacturer
-            if decoded_item.stats.item_class is not None and len(data) >= 4:
-                data[3] = decoded_item.stats.item_class
-            if decoded_item.stats.rarity is not None and len(data) >= 10:
-                data[9] = decoded_item.stats.rarity
-
-        elif decoded_item.item_type == "d":
-            if decoded_item.stats.primary_stat is not None and len(data) >= 6:
-                struct.pack_into(
-                    "<H", data, 4, decoded_item.stats.primary_stat
-                )
-            if (
-                decoded_item.stats.secondary_stat is not None
-                and len(data) >= 10
-            ):
-                struct.pack_into(
-                    "<H", data, 8, decoded_item.stats.secondary_stat
-                )
-            if decoded_item.stats.manufacturer is not None and len(data) >= 6:
-                data[5] = decoded_item.stats.manufacturer
-            if decoded_item.stats.item_class is not None and len(data) >= 7:
-                data[6] = decoded_item.stats.item_class
-
-        prefix = f"@Ug{decoded_item.item_type}"
-        return bit_pack_encode(bytes(data), prefix)
-
-    except Exception as e:
-        print(f"Warning: Failed to encode item serial: {e}")
-        return decoded_item.serial
-
-
 def find_and_decode_serials_in_yaml(yaml_data: dict) -> Dict[str, DecodedItem]:
     decoded_serials = {}
 
@@ -556,7 +410,6 @@ def extract_and_encode_serials_from_yaml(yaml_data: dict) -> dict:
         )
 
         new_serial = encode_item_serial(decoded_item)
-
         set_nested_value(result, path, new_serial)
 
     if "_DECODED_ITEMS" in result:
