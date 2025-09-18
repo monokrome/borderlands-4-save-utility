@@ -1,0 +1,14 @@
+# Configuration data
+*.env
+*.txt
+
+# Save files
+*.sav
+*.yaml
+
+# Python cache & optimization files
+*.py[bco]
+
+# Non-git hidden file patterns
+.*
+!.git*
